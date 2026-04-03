@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Modules Page</title>
+</head>
+
+<body class="bg-gray-100">
+    <div id="navbar"></div>
+    <div class="max-w-3xl mx-auto py-10 px-6">
+
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold">Manage Modules</h2>
+                <p id="courseName" class="text-3xl text-blue-400 mt-2"></p>
+            </div>
+            <button id="backBtn" class="text-lg cursor-pointer">&#8592; Back</button>
+        </div>
+
+        <!-- add module -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="font-semibold mb-4">Add New Module</h3>
+            <div class="flex gap-3">
+                <input type="text" id="moduleTitle" placeholder="Enter module title"
+                    class="border px-4 py-2 rounded-lg w-full">
+                <button id="addModuleBtn" class="bg-black text-white px-6 py-2 rounded-lg">Add</button>
+            </div>
+        </div>
+
+        <!-- modules list -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Modules</h3>
+            <div id="modulesList"></div>
+        </div>
+
+    </div>
+
+    <!-- edit module modal -->
+    <div id="editModuleModal" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h2 class="text-xl font-bold mb-4">Edit Module</h2>
+            <input type="text" id="editModuleTitle" class="border px-4 py-2 rounded-lg w-full mb-4">
+            <div class="flex gap-3">
+                <button id="saveEditBtn" class="bg-black text-white px-4 py-2 rounded-lg w-full">Save</button>
+                <button id="cancelEditBtn" class="bg-gray-400 text-white px-4 py-2 rounded-lg w-full">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lessonModal" class="hidden fixed inset-0 flex items-center justify-center z-50 px-4">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h2 id="lessonModalTitle" class="text-xl font-bold mb-4">Add Lesson</h2>
+            <div class="flex flex-col gap-3">
+                <div>
+                    <label class="font-semibold text-lg">Lesson Title</label>
+                    <input type="text" id="lessonTitle" placeholder="Enter Lesson Title"
+                        class="border px-4 py-2 rounded-lg w-full mt-2">
+                </div>
+                <div>
+                    <label class="font-semibold text-lg">Lesson Content</label>
+                    <textarea name="lessoncontent" id="lessonContent" placeholder="Write lesson content here"
+                        class="border px-4 py-2 rounded-lg w-full mt-2"></textarea>
+                </div>
+                <div class="flex gap-3 mt-2">
+                    <button id="saveLessonBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg w-full">Save</button>
+                    <button id="cancelLessonBtn"
+                        class="bg-gray-500 text-white px-4 py-2 rounded-lg w-full">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="bg-amber-200 p-8 px-20">
+        <div class="p-10">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-x-10 gap-y-10 md:gap-y-0">
+                <div class=" md:mx-auto mx-15">
+                    <h3 class="text-left text-darkbluegray text-1-1xl font-semibold">Phone Support</h3>
+                    <p class="text-left font-lg text-bluegray">24/7 Call us now.</p>
+                    <p class="text-left font-lg text-bluegray"><a href="tel://">+91 8101436009</a></p>
+                </div>
+                <div class=" md:mx-auto mx-16">
+                    <h3 class="text-left text-darkbluegray text-1-1xl font-semibold">Connect With Us</h3>
+                    <p class="text-left font-lg text-bluegray">We are socialized. Follow us</p>
+                    <p class="text-left font-lg text-darkbluegray">
+                        <a href="#" class=""><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class=""><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class=""><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class=""><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class=""><i class="fa-brands fa-youtube"></i></a>
+                    </p>
+                </div>
+                <div class="md:mx-auto mx-20 flex md:flex-row flex-col items-center md:justify-normal justify-center">
+                    <div class="md:mx-auto mx-10">
+                        <h3 class="text-left text-darkbluegray text-1-1xl font-semibold">Connect With Us</h3>
+                        <p class="text-left font-lg text-bluegray">India's Best Learning Website</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../../dist/scripts/main.js" defer></script>
+    <script type="module" src="../../dist/scripts/manageModules.js" defer></script>
+</body>
+
+</html>

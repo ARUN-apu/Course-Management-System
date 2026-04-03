@@ -1,0 +1,1234 @@
+openapi: 3.0.0
+info:
+  title: Course Management System API
+  description: Complete REST API for course management system with FULL CRUD operations
+  version: 1.0.0
+  contact:
+    name: Course Management API
+    email: support@example.com
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development server
+  - url: https://api.course-management.com/v1
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token required for authenticated endpoints
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        name:
+          type: string
+          example: "Arun"
+        email:
+          type: string
+          example: "arun@gmail.com"
+        phone:
+          type: string
+          example: "8101436009"
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 2
+            name:
+              type: string
+              example: "Instructor"
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required: [name, email]
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        title:
+          type: string
+          example: "Web Development"
+        description:
+          type: string
+          example: "complete web dev course"
+        instructor_id:
+          type: integer
+          example: 1
+        course_fee:
+          type: number
+          format: decimal
+          example: 1999.00
+        is_deleted:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required: [title, description, instructor_id, course_fee]
+
+    Enrollment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        student_id:
+          type: integer
+          example: 2
+        course_id:
+          type: integer
+          example: 1
+        enrolled_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required: [student_id, course_id]
+
+    Module:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        course_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "HTML BASICS"
+        order_index:
+          type: integer
+          example: 1
+      required: [title, order_index]
+
+    Lesson:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        module_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Introduction to HTML"
+        content_type:
+          type: string
+          enum: ["video", "text"]
+          example: "video"
+        content_url:
+          type: string
+          nullable: true
+        order_index:
+          type: integer
+          example: 1
+      required: [title, content_type, order_index]
+
+    LessonsProgress:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        enrollment_id:
+          type: integer
+          example: 1
+        lesson_id:
+          type: integer
+          example: 1
+        is_completed:
+          type: boolean
+          example: false
+      required: [enrollment_id, lesson_id, is_completed]
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        user_id:
+          type: integer
+          example: 2
+        course_id:
+          type: integer
+          example: 1
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+      required: [rating]
+
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        course_id:
+          type: integer
+          example: 1
+        instructor_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Assignment 1"
+        description:
+          type: string
+          example: "Completed HTML task"
+        due_date:
+          type: string
+          format: date-time
+          example: "2026-02-14T23:00:00"
+        is_complete:
+          type: boolean
+          example: false
+      required: [title, due_date]
+
+    Submission:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          readOnly: true
+        assignment_id:
+          type: integer
+          example: 1
+        student_id:
+          type: integer
+          example: 2
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        graded:
+          type: boolean
+          example: false
+        grade:
+          type: integer
+          example: 85
+      required: [student_id]
+
+    LoginRequest:
+      type: object
+      required: [email, password_hash]
+      properties:
+        email:
+          type: string
+          example: "arun@gmail.com"
+        password_hash:
+          type: string
+          example: "arun@123"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Unauthorized"
+        error:
+          type: string
+          example: "Invalid credentials"
+
+security:
+  - bearerAuth: []
+
+paths:
+  # AUTHENTICATION
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new user (Admin only)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password_hash, role_id]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password_hash: { type: string }
+                phone: { type: string }
+                role_id: { type: integer }
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  # USERS - FULL CRUD
+  /users:
+    get:
+      tags: [Users]
+      summary: List all users (Admin only)
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '403':
+          $ref: '#/components/schemas/Error'
+    post:
+      tags: [Users]
+      summary: Create new user (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password_hash, role_id]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password_hash: { type: string }
+                phone: { type: string }
+                role_id: { type: integer }
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/schemas/Error'
+    patch:
+      tags: [Users]
+      summary: Update user profile (self or Admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                phone: { type: string }
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags: [Users]
+      summary: Delete user (Admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted
+        '403':
+          $ref: '#/components/schemas/Error'
+
+  # COURSES - FULL CRUD
+  /courses:
+    get:
+      tags: [Courses]
+      summary: List available courses
+      parameters:
+        - name: instructor_id
+          in: query
+          schema:
+            type: integer
+        - name: is_deleted
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+    post:
+      tags: [Courses]
+      summary: Create new course (Instructor/Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, instructor_id, course_fee]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                instructor_id: { type: integer }
+                course_fee: { type: number, format: decimal }
+      responses:
+        '201':
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+
+  /courses/{id}:
+    get:
+      tags: [Courses]
+      summary: Get course details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    patch:
+      tags: [Courses]
+      summary: Update course (Instructor/Admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+                course_fee: { type: number }
+      responses:
+        '200':
+          description: Course updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+    put:
+      tags: [Courses]
+      summary: Replace entire course (Instructor)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '200':
+          description: Course replaced
+    delete:
+      tags: [Courses]
+      summary: Soft delete course (Admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Course deleted
+
+  # MODULES - FULL CRUD
+  /courses/{courseId}/modules:
+    get:
+      tags: [Modules]
+      summary: List course modules
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of modules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+    post:
+      tags: [Modules]
+      summary: Add module to course (Instructor)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, order_index]
+              properties:
+                title: { type: string }
+                order_index: { type: integer }
+      responses:
+        '201':
+          description: Module created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+
+  /courses/{courseId}/modules/{moduleId}:
+    get:
+      tags: [Modules]
+      summary: Get single module
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Module details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+    patch:
+      tags: [Modules]
+      summary: Update module (Instructor)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                order_index: { type: integer }
+      responses:
+        '200':
+          description: Module updated
+    delete:
+      tags: [Modules]
+      summary: Delete module (Instructor)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Module deleted
+
+  # LESSONS - FULL CRUD
+  /modules/{moduleId}/lessons:
+    get:
+      tags: [Lessons]
+      summary: List module lessons
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lesson'
+    post:
+      tags: [Lessons]
+      summary: Add lesson to module (Instructor)
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content_type, order_index]
+              properties:
+                title: { type: string }
+                content_type: { type: string, enum: ["video", "text"] }
+                content_url: { type: string }
+                order_index: { type: integer }
+      responses:
+        '201':
+          description: Lesson created
+          content:
+            application/json:
+            schema:
+                $ref: '#/components/schemas/Lesson'
+
+  /modules/{moduleId}/lessons/{lessonId}:
+    get:
+      tags: [Lessons]
+      summary: Get single lesson
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lesson details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lesson'
+    patch:
+      tags: [Lessons]
+      summary: Update lesson (Instructor)
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                content_url: { type: string }
+                order_index: { type: integer }
+      responses:
+        '200':
+          description: Lesson updated
+    delete:
+      tags: [Lessons]
+      summary: Delete lesson (Instructor)
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Lesson deleted
+
+  # ENROLLMENTS - FULL CRUD
+  /enrollments:
+    post:
+      tags: [Enrollments]
+      summary: Enroll student in course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [student_id, course_id]
+              properties:
+                student_id: { type: integer }
+                course_id: { type: integer }
+      responses:
+        '201':
+          description: Enrollment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enrollment'
+
+  /students/{studentId}/enrollments:
+    get:
+      tags: [Enrollments]
+      summary: List student enrollments
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Student enrollments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Enrollment'
+
+  /enrollments/{id}:
+    get:
+      tags: [Enrollments]
+      summary: Get single enrollment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Enrollment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enrollment'
+    delete:
+      tags: [Enrollments]
+      summary: Cancel enrollment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Enrollment cancelled
+
+  /enrollments/{id}/progress:
+    get:
+      tags: [Progress]
+      summary: Get enrollment progress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lessons progress
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LessonsProgress'
+
+  /lessons-progress:
+    patch:
+      tags: [Progress]
+      summary: Update lesson progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enrollment_id, lesson_id, is_completed]
+              properties:
+                enrollment_id: { type: integer }
+                lesson_id: { type: integer }
+                is_completed: { type: boolean }
+      responses:
+        '200':
+          description: Progress updated
+
+  # REVIEWS - FULL CRUD
+  /courses/{courseId}/reviews:
+    get:
+      tags: [Reviews]
+      summary: List course reviews
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+    post:
+      tags: [Reviews]
+      summary: Add course review (enrolled students)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating: { type: integer, minimum: 1, maximum: 5 }
+      responses:
+        '201':
+          description: Review created
+
+  /courses/{courseId}/reviews/{reviewId}:
+    get:
+      tags: [Reviews]
+      summary: Get single review
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Review details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+    patch:
+      tags: [Reviews]
+      summary: Update own review
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating: { type: integer, minimum: 1, maximum: 5 }
+      responses:
+        '200':
+          description: Review updated
+    delete:
+      tags: [Reviews]
+      summary: Delete own review
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Review deleted
+
+  # ASSIGNMENTS - FULL CRUD
+  /courses/{courseId}/assignments:
+    get:
+      tags: [Assignments]
+      summary: List course assignments
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Course assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Assignment'
+    post:
+      tags: [Assignments]
+      summary: Create assignment (Instructor)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, due_date]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                due_date: { type: string, format: date-time }
+      responses:
+        '201':
+          description: Assignment created
+
+  /courses/{courseId}/assignments/{assignmentId}:
+    get:
+      tags: [Assignments]
+      summary: Get assignment details
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Assignment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+    patch:
+      tags: [Assignments]
+      summary: Update assignment (Instructor)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+                due_date: { type: string, format: date-time }
+      responses:
+        '200':
+          description: Assignment updated
+    delete:
+      tags: [Assignments]
+      summary: Delete assignment (Instructor)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Assignment deleted
+
+  # SUBMISSIONS - FULL CRUD
+  /assignments/{assignmentId}/submissions:
+    get:
+      tags: [Submissions]
+      summary: List assignment submissions (Instructor)
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Assignment submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Submission'
+    post:
+      tags: [Submissions]
+      summary: Submit assignment (Student)
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                student_id: { type: integer }
+      responses:
+        '201':
+          description: Submission created
+
+  /assignments/{assignmentId}/submissions/{submissionId}:
+    get:
+      tags: [Submissions]
+      summary: Get single submission
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Submission details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+    patch:
+      tags: [Submissions]
+      summary: Grade submission (Instructor)
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                graded: { type: boolean }
+                grade: { type: integer, minimum: 0, maximum: 100 }
+      responses:
+        '200':
+          description: Submission graded
+    delete:
+      tags: [Submissions]
+      summary: Delete submission
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Submission deleted
+
+  # ADMIN ENDPOINTS
+  /instructors:
+    get:
+      tags: [Admin]
+      summary: List instructors (Admin only)
+      responses:
+        '200':
+          description: List of instructors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                    user:
+                      $ref: '#/components/schemas/User'
+
+  /roles:
+    get:
+      tags: [Admin]
+      summary: List roles (Admin only)
+      responses:
+        '200':
+          description: List of roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                    type: string

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Register Page</title>
+</head>
+
+<body class="bg-gray-200 min-h-screen flex items-center justify-center px-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">Register</h1>
+        <form id="registerForm" class="flex flex-col gap-3">
+            <div class="flex flex-col">
+                <label for="name" class="font-bold">Full Name</label>
+                <input type="text" placeholder="Type Full Name here" id="name" name="name" required
+                    class="w-full border px-4 py-2 rounded-lg">
+            </div>
+            <div class="flex flex-col">
+                <label for="email" class="font-bold">Email</label>
+                <input type="email" placeholder="Enter Email here" id="email" name="email" required
+                    class="w-full border px-4 py-2 rounded-lg">
+            </div>
+            <div class="flex flex-col">
+                <label for="password" class="font-bold">Password</label>
+                <input type="password" placeholder="Enter Your Password" id="password" name="password" required
+                    class="w-full border px-4 py-2 rounded-lg">
+            </div>
+            <div>
+                <label for="role" class="font-bold">Role</label>
+                <select id="role" name="role" class="w-full border px-4 py-2 rounded-lg" required>
+                    <option value="">Register as</option>
+                    <option value="3">Student</option>
+                    <option value="2">Instructor</option>
+                </select>
+            </div>
+            <div>
+                <input type="submit" value="Register" id="submitBtn"
+                    class="w-full bg-orange-500 text-white py-2 rounded-lg">
+            </div>
+
+            <p> Already have an account? <span id="login" class="cursor-pointer">Login</span></p>
+        </form>
+    </div>
+
+    <script type="module" src="../../dist/scripts/main.js" defer></script>
+    <script type="module" src="../../dist/scripts/register.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "course-managenet-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev-css": "tailwindcss -i ./frontend/src/styles/input.css -o ./frontend/dist/output.css --watch",
+    "dev-ts": "tsc --watch",
+    "dev": "concurrently \"npm run dev-css\" \"npm run dev-ts\"",
+    "build": "tsc && tailwindcss -i ./frontend/src/styles/input.css -o ./frontend/dist/output.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "^5.9.3"
+  }
+}

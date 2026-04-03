@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../dist/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Login Page</title>
+</head>
+
+<body class="bg-gray-200 min-h-screen flex items-center justify-center px-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">Login</h1>
+        <form id="loginForm" class="flex flex-col gap-3">
+            <div class="flex flex-col">
+                <label for="email" class="font-bold">Email</label>
+                <input type="email" placeholder="Enter Email here" id="email" name="email" required
+                    class="w-full border px-4 py-2 rounded-lg">
+            </div>
+            <div class="flex flex-col">
+                <label for="password" class="font-bold">Password</label>
+                <input type="password" placeholder="Enter Password" id="password" name="password" required
+                    class="w-full border px-4 py-2 rounded-lg">
+            </div>
+            <div>
+                <input type="submit" value="Login" id="submitBtn"
+                    class="w-full bg-orange-500 text-white py-2 rounded-lg cursor-pointer">
+            </div>
+            <p>Don't have an account? <span id="register" class="cursor-pointer">Register</span></p>
+        </form>
+    </div>
+    <script type="module" src="../../dist/scripts/login.js" defer></script>
+    <script type="module" src="../../dist/scripts/main.js" defer></script>
+
+</body>
+
+</html>
